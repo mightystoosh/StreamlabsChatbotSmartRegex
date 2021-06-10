@@ -120,7 +120,10 @@ def Execute(data):
             # item[0] is the regex pattern
             regex = item[0]
             # searchRegex = re.compile('(a|r$)').search
-            message_pieces_temp = re.search(regex, data.Message)
+            if regex[-2:] == '/i':
+                message_pieces_temp = re.search(regex[:-2], data.Message, re.IGNORECASE)
+            else:
+                message_pieces_temp = re.search(regex, data.Message)
             if message_pieces_temp:
                 found = True
                 message_pieces = message_pieces_temp.groups()
@@ -243,6 +246,9 @@ def LoadConfigFile():
                                 if re.search("^/.*/$", token):
                                     regex = re.search("^/.*/$", token).group(0).strip('/')
                                     Parent.Log(ScriptName, "found regex: "+repr(regex))
+                                elif re.search("^/.*/[a-z]$", token):
+                                    regex = re.search("^/.*/[a-z]$", token).group(0).strip('/')
+                                    Parent.Log(ScriptName, "found regex case insensitive: "+repr(regex))
                                 elif re.search("^-->/$", token):
                                     regex = re.search("^/-->/$", token).group(0).strip('/-->').strip('/')
                                     Parent.Log(ScriptName, "found regex: "+repr(regex))
